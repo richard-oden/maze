@@ -2,38 +2,39 @@ using System;
 
 namespace Maze
 {
-    public static class Render
+    public class Render
     {
-        public static string[,] BuildMazeArray(Cell[,] cells)
+        private int _cellWidth;
+
+        public Render(int cellWidth = 1)
         {
-            var maze = new string[cells.GetLength(0)*3, cells.GetLength(1)*3];
+            _cellWidth = cellWidth;
+        }
+        public string[,] BuildMazeArray(Cell[,] cells)
+        {
+            var maze = new string[cells.GetLength(0) * 2, cells.GetLength(1) * 2];
             for (int y = 0; y < cells.GetLength(1); y++)
             {
                 for (int x = 0; x < cells.GetLength(0); x++)
                 {
-                    int mazeX = x * 3;
-                    int mazeY = y * 3;
+                    int mazeX = x * 2;
+                    int mazeY = y * 2;
                     if (cells[x,y] != null)
                     {
-                        // Draw corners:
-                        maze[mazeX, mazeY] = "\u2588\u2588";
-                        maze[mazeX + 2, mazeY] = "\u2588\u2588";
-                        maze[mazeX, mazeY + 2] = "\u2588\u2588";
-                        maze[mazeX + 2, mazeY + 2] = "\u2588\u2588";
-                        // Draw sides where there are no connection:
-                        maze[mazeX + 1, mazeY] = cells[x,y].Connections.Contains(CellConnection.North) ? "  " : "\u2588\u2588";
-                        maze[mazeX, mazeY + 1] = cells[x,y].Connections.Contains(CellConnection.West) ? "  " : "\u2588\u2588";
-                        maze[mazeX + 2, mazeY + 1] = cells[x,y].Connections.Contains(CellConnection.East) ? "  " : "\u2588\u2588";
-                        maze[mazeX + 1, mazeY + 2] = cells[x,y].Connections.Contains(CellConnection.South) ? "  " : "\u2588\u2588";
                         // Draw center:
-                        maze[mazeX + 1, mazeY + 1] =  "  ";
+                        maze[mazeX, mazeY] =  "  ";
+                        // Draw SE corner:
+                        maze[mazeX + 1, mazeY + 1] = "\u2588\u2588";
+                        // Draw south and east sides where there are no connections:
+                        maze[mazeX + 1, mazeY] = cells[x,y].Connections.Contains(CellConnection.East) ? "  " : "\u2588\u2588";
+                        maze[mazeX, mazeY + 1] = cells[x,y].Connections.Contains(CellConnection.South) ? "  " : "\u2588\u2588";
                     }
                 }
             }
             return maze;
         }
 
-        public static string BuildMazeString(string[,] mazeArray)
+        public string BuildMazeString(string[,] mazeArray)
         {
             string mazeString = "";
             for (int y = 0; y < mazeArray.GetLength(1); y++)
