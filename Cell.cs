@@ -5,10 +5,9 @@ namespace Maze
 {
     public class Cell
     {
-        public Coordinate Coordinate;
-        public HashSet<CellConnection> Connections = new HashSet<CellConnection>();
+        public HashSet<Direction> Connections = new HashSet<Direction>();
     }
-    public enum CellConnection
+    public enum Direction
     {
         North,
         South,

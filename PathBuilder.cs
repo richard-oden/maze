@@ -1,53 +1,88 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Maze
 {
     public class PathBuilder
     {
-        private Cell[,] _maze;
+        private Maze _maze;
         private int _width;
         private int _height;
-        public LinkedList<Cell> Path = new LinkedList<Cell>();
-        public PathBuilder(Cell[,] maze)
+        public LinkedList<Coordinate> Path = new LinkedList<Coordinate>();
+        public PathBuilder(Maze maze)
         {
             _maze = maze;
-            _width = maze.GetLength(0);
-            _height = maze.GetLength(1);
+            _width = maze.Width;
+            _height = maze.Height;
+        }
 
-            Path.AddFirst(new Cell { Coordinate = Coordinate.Random(_width, _height) });
+        public void Start()
+        {
+            // Create starting point
+            var initialCoord = Coordinate.Random(_width, _height);
+            addToPath(initialCoord);
+
             // Maze algorithm
             while (Path.Count < _width * _height)
             {
-                // Create list of unvisited neighbor coordinates:
-                var unvisitedNeighborCoords = new HashSet<Coordinate>();
-                var coordOfFirstCell = Path.First.Value.Coordinate;
-
-                // North border
-                if (coordOfFirstCell.Y > 0 && 
-                    maze[coordOfFirstCell.X, coordOfFirstCell.Y-1] == null)
+                var originNode = Path.First;
+                var unvisitedNeighbors = getUnvisitedNeighborsByDirection(originNode);
+                // If no neighbors, recursively check previous coord until neighbor is found:
+                while (!unvisitedNeighbors.Any())
                 {
-                    unvisitedNeighborCoords.Add(new Coordinate { X = coordOfFirstCell.X, Y = coordOfFirstCell.Y-1 });   
+                    originNode = originNode.Next;
+                    unvisitedNeighbors = getUnvisitedNeighborsByDirection(originNode);
                 }
-                // South border
-                if (coordOfFirstCell.Y < _height - 1 && 
-                    maze[coordOfFirstCell.X, coordOfFirstCell.Y+1] == null)
-                {
-                    unvisitedNeighborCoords.Add(new Coordinate { X = coordOfFirstCell.X, Y = coordOfFirstCell.Y+1 });
-                }
-                // East border
-                if (coordOfFirstCell.X > 0 && 
-                    maze[coordOfFirstCell.X-1, coordOfFirstCell.Y] == null)
-                {
-                    unvisitedNeighborCoords.Add(new Coordinate { X = coordOfFirstCell.X-1, Y = coordOfFirstCell.Y });
-                }
-                // West border
-                if (coordOfFirstCell.X < _width - 1 && 
-                    maze[coordOfFirstCell.X+1, coordOfFirstCell.Y] == null)
-                {
-                    unvisitedNeighborCoords.Add(new Coordinate { X = coordOfFirstCell.X+1, Y = coordOfFirstCell.Y });
-                }
+                var nextNeighborByDirection = unvisitedNeighbors.RandomElement();
+                extendPath(originNode.Value, nextNeighborByDirection.Key, nextNeighborByDirection.Value);
             }
+        }
+
+        private void addToPath(Coordinate newCoord)
+        {
+            Path.AddFirst(newCoord);
+            _maze.Cells[newCoord.X, newCoord.Y] = new Cell();
+        }
+
+        private void extendPath(Coordinate originCoord, Direction directionTo, Coordinate newCoord)
+        {
+            Path.AddFirst(newCoord);
+            _maze.Cells[originCoord.X, originCoord.Y].Connections.Add(directionTo);
+            _maze.Cells[newCoord.X, newCoord.Y] = new Cell { Connections = new HashSet<Direction> { directionTo.Opposite() } };
+        }
+
+        private Dictionary<Direction, Coordinate> getUnvisitedNeighborsByDirection(LinkedListNode<Coordinate> originNode)
+        {
+            var unvisitedNeighbors = new Dictionary<Direction, Coordinate>();
+            var origin = originNode.Value;
+
+            // Check for north neighbor
+            if (origin.Y > 0 && 
+                _maze.Cells[origin.X, origin.Y-1] == null)
+            {
+                unvisitedNeighbors.Add(Direction.North, new Coordinate { X = origin.X, Y = origin.Y-1 });   
+            }
+            // Check for south neighbor
+            if (origin.Y < _height - 1 && 
+                _maze.Cells[origin.X, origin.Y+1] == null)
+            {
+                unvisitedNeighbors.Add(Direction.South, new Coordinate { X = origin.X, Y = origin.Y+1 });
+            }
+            // Check for east neighbor
+            if (origin.X > 0 && 
+                _maze.Cells[origin.X-1, origin.Y] == null)
+            {
+                unvisitedNeighbors.Add(Direction.East, new Coordinate { X = origin.X-1, Y = origin.Y });
+            }
+            // Check for west neighbor
+            if (origin.X < _width - 1 && 
+                _maze.Cells[origin.X+1, origin.Y] == null)
+            {
+                unvisitedNeighbors.Add(Direction.West, new Coordinate { X = origin.X+1, Y = origin.Y });
+            }
+
+            return unvisitedNeighbors;
         }
     }
 }
