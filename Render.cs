@@ -1,42 +1,60 @@
 using System;
+using System.Linq;
 
 namespace Maze
 {
     public class Render
     {
         private Maze _maze;
-        private int _cellWidth;
 
-        public Render(Maze maze, int cellWidth = 1)
+        public Render(Maze maze)
         {
             _maze = maze;
-            _cellWidth = cellWidth;
         }
 
-        public void Start() {
-            var mazeArray = buildMazeArray();
+        public void Start(int cellSize = 1) {
+            var mazeArray = buildMazeArray(cellSize);
             var mazeString = BuildMazeString(mazeArray);
             Console.WriteLine(mazeString);
         }
-        private string[,] buildMazeArray()
+        private string[,] buildMazeArray(int cellSize)
         {
-            var mazeString = new string[_maze.Cells.GetLength(0) * 2, _maze.Cells.GetLength(1) * 2];
+            var mazeArray = new string[_maze.Cells.GetLength(0) * (cellSize + 1), _maze.Cells.GetLength(1) * (cellSize + 1)];
             for (int y = 0; y < _maze.Cells.GetLength(1); y++)
             {
                 for (int x = 0; x < _maze.Cells.GetLength(0); x++)
                 {
-                    int mazeX = x * 2;
-                    int mazeY = y * 2;
-                    // Draw center:
-                    mazeString[mazeX, mazeY] =  "\u2588\u2588";
-                    // If cell exists, draw SE corner:
-                    mazeString[mazeX + 1, mazeY + 1] = _maze.Cells[x,y] == null ? "\u2588\u2588" : "  ";
-                    // If cell exist, draw south and east sides where there are no connections:
-                    mazeString[mazeX + 1, mazeY] = _maze.Cells[x,y] == null || _maze.Cells[x,y].Connections.Contains(Direction.East) ? "\u2588\u2588" : "  ";
-                    mazeString[mazeX, mazeY + 1] = _maze.Cells[x,y] == null || _maze.Cells[x,y].Connections.Contains(Direction.South) ? "\u2588\u2588" : "  ";
+                    int mazeX = x * (cellSize + 1);
+                    int mazeY = y * (cellSize + 1);
+                    // Draw cell:
+                    for (int cellY = 0; cellY <= cellSize; cellY++)
+                    {
+                        for (int cellX = 0; cellX <= cellSize; cellX++)
+                        {
+                            if (_maze.Cells[x,y] != null)
+                            {
+                                if (cellX == cellSize && cellY == cellSize)
+                                    // Draw SE corner
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = "\u2588\u2588";
+                                else if (cellX == cellSize)
+                                    // Draw east border
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.East) ? "  " : "\u2588\u2588";
+                                else if (cellY == cellSize)
+                                    // Draw south border
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? "  " : "\u2588\u2588";
+                                else
+                                    // Draw center
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = "  ";
+                            }
+                            else
+                            {
+                                mazeArray[mazeX + cellX, mazeY + cellY] = "\u2588\u2588";
+                            }
+                        }
+                    }
                 }
             }
-            return mazeString;
+            return mazeArray;
         }
 
         public string BuildMazeString(string[,] mazeArray)

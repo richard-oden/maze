@@ -11,8 +11,8 @@ namespace Maze
             var maze = new Maze(24, 12);
             var pathBuilder = new PathBuilder(maze);
             var render = new Render(maze);
-            pathBuilder.Start(true);
-            render.Start();
+            pathBuilder.Start(true, 2);
+            render.Start(2);
         }
     }
 }

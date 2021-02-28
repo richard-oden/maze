@@ -17,7 +17,7 @@ namespace Maze
             _height = maze.Height;
         }
 
-        public void Start(bool visualize = false)
+        public void Start(bool visualize = false, int cellSize = 1)
         {
             var render = new Render(_maze);
             // Create starting point
@@ -37,13 +37,14 @@ namespace Maze
                 }
                 var nextNeighborByDirection = unvisitedNeighbors.RandomElement();
                 extendPath(originNode.Value, nextNeighborByDirection.Key, nextNeighborByDirection.Value);
+                
                 if (visualize)
                 {
-                    render.Start();
+                    render.Start(cellSize);
                     System.Threading.Thread.Sleep(100);
                     Console.Clear();
                 }
-        }
+            }
         }
 
         private void addToPath(Coordinate newCoord)
@@ -80,13 +81,13 @@ namespace Maze
             if (origin.X > 0 && 
                 _maze.Cells[origin.X-1, origin.Y] == null)
             {
-                unvisitedNeighbors.Add(Direction.East, new Coordinate { X = origin.X-1, Y = origin.Y });
+                unvisitedNeighbors.Add(Direction.West, new Coordinate { X = origin.X-1, Y = origin.Y });
             }
             // Check for west neighbor
             if (origin.X < _width - 1 && 
                 _maze.Cells[origin.X+1, origin.Y] == null)
             {
-                unvisitedNeighbors.Add(Direction.West, new Coordinate { X = origin.X+1, Y = origin.Y });
+                unvisitedNeighbors.Add(Direction.East, new Coordinate { X = origin.X+1, Y = origin.Y });
             }
 
             return unvisitedNeighbors;
