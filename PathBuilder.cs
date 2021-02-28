@@ -17,8 +17,9 @@ namespace Maze
             _height = maze.Height;
         }
 
-        public void Start()
+        public void Start(bool visualize = false)
         {
+            var render = new Render(_maze);
             // Create starting point
             var initialCoord = Coordinate.Random(_width, _height);
             addToPath(initialCoord);
@@ -36,7 +37,13 @@ namespace Maze
                 }
                 var nextNeighborByDirection = unvisitedNeighbors.RandomElement();
                 extendPath(originNode.Value, nextNeighborByDirection.Key, nextNeighborByDirection.Value);
-            }
+                if (visualize)
+                {
+                    render.Start();
+                    System.Threading.Thread.Sleep(100);
+                    Console.Clear();
+                }
+        }
         }
 
         private void addToPath(Coordinate newCoord)

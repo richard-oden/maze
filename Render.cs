@@ -20,26 +20,23 @@ namespace Maze
         }
         private string[,] buildMazeArray()
         {
-            var maze = new string[_maze.Cells.GetLength(0) * 2, _maze.Cells.GetLength(1) * 2];
+            var mazeString = new string[_maze.Cells.GetLength(0) * 2, _maze.Cells.GetLength(1) * 2];
             for (int y = 0; y < _maze.Cells.GetLength(1); y++)
             {
                 for (int x = 0; x < _maze.Cells.GetLength(0); x++)
                 {
                     int mazeX = x * 2;
                     int mazeY = y * 2;
-                    if (_maze.Cells[x,y] != null)
-                    {
-                        // Draw center:
-                        maze[mazeX, mazeY] =  "  ";
-                        // Draw SE corner:
-                        maze[mazeX + 1, mazeY + 1] = "\u2588\u2588";
-                        // Draw south and east sides where there are no connections:
-                        maze[mazeX + 1, mazeY] = _maze.Cells[x,y].Connections.Contains(Direction.East) ? "  " : "\u2588\u2588";
-                        maze[mazeX, mazeY + 1] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? "  " : "\u2588\u2588";
-                    }
+                    // Draw center:
+                    mazeString[mazeX, mazeY] =  "\u2588\u2588";
+                    // If cell exists, draw SE corner:
+                    mazeString[mazeX + 1, mazeY + 1] = _maze.Cells[x,y] == null ? "\u2588\u2588" : "  ";
+                    // If cell exist, draw south and east sides where there are no connections:
+                    mazeString[mazeX + 1, mazeY] = _maze.Cells[x,y] == null || _maze.Cells[x,y].Connections.Contains(Direction.East) ? "\u2588\u2588" : "  ";
+                    mazeString[mazeX, mazeY + 1] = _maze.Cells[x,y] == null || _maze.Cells[x,y].Connections.Contains(Direction.South) ? "\u2588\u2588" : "  ";
                 }
             }
-            return maze;
+            return mazeString;
         }
 
         public string BuildMazeString(string[,] mazeArray)
