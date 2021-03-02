@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Maze
 {
     public class Maze
@@ -5,15 +9,55 @@ namespace Maze
         public int Width {get; private set;}
         public int Height {get; private set;}
         public Cell[,] Cells;
+        public Coordinate Start {get; private set;}
+        public Coordinate End {get; private set;}
+        private Dictionary<string, Quadrant> _quadrants;
 
-        public Maze(int width, int height)
+        public Maze(int width, int height, Coordinate? start = null, Coordinate? end = null)
         {
             Width = width;
             Height = height;
             Cells = new Cell[width, height];
+            _quadrants = new Dictionary<string, Quadrant>()
+            {
+                { "NW", new Quadrant(0, 0, Width / 2, Height / 2) },
+                { "NE", new Quadrant(Width / 2, 0, Width, Height / 2) },
+                { "SW", new Quadrant(0, Height / 2, Width / 2, Height) },
+                { "SE", new Quadrant(Width / 2, Height / 2, Width, Height) }
+            };
+            setStartAndEnd(start, end);
         }
 
-        private bool isCoordinateInBounds(Coordinate coord)
+        private Coordinate getCoordinateInOppositeQuadrant(Coordinate originCoord)
+        {   
+            var originQuad = _quadrants.Single(q => q.Value.IsCoordinateInBounds(originCoord));
+            var oppositeQuad = _quadrants.Single(q => q.Key[0] != originQuad.Key[0] && q.Key[1] != originQuad.Key[1]);
+            var oppositeCoord = Coordinate.Random(oppositeQuad.Value.XMin, oppositeQuad.Value.YMin, oppositeQuad.Value.XMax, oppositeQuad.Value.XMax);
+            return oppositeCoord;
+        }
+
+        private void setStartAndEnd(Coordinate? start = null, Coordinate? end = null)
+        {
+            if (start == null && end == null)
+            {
+                Start = Coordinate.Random(Width, Height);
+                End = getCoordinateInOppositeQuadrant(Start);
+            }
+            else if (start == null)
+            {
+                End = getCoordinateInOppositeQuadrant(Start);
+            }
+            else if (end == null)
+            {
+                Start = getCoordinateInOppositeQuadrant(End);
+            }
+            else {
+                Start = (Coordinate) start;
+                End = (Coordinate) end;
+            }
+        }
+
+        public bool IsCoordinateInBounds(Coordinate coord)
         {
             return coord.X > -1 && coord.X < Width &&
                    coord.Y > -1 && coord.Y < Height;
@@ -23,7 +67,7 @@ namespace Maze
         {
             Direction cellAConnection = 0;
             
-            if (isCoordinateInBounds(coordA) && isCoordinateInBounds(coordB) &&
+            if (IsCoordinateInBounds(coordA) && IsCoordinateInBounds(coordB) &&
                 Cells[coordA.X, coordA.Y] != null && Cells[coordB.X, coordB.Y] != null)
             {
                 if (coordA.X == coordB.X)
