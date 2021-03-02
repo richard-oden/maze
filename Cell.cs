@@ -9,6 +9,7 @@ namespace Maze
     }
     public enum Direction
     {
+        Undefined = 0,
         North,
         South,
         East,
