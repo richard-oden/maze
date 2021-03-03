@@ -27,5 +27,15 @@ namespace Maze
                 new Coordinate {X = this.X + 1, Y = this.Y}
             };
         }
+
+        public static bool operator ==(Coordinate coordA, Coordinate coordB) 
+        {
+            return coordA.Equals(coordB);
+        }
+
+        public static bool operator !=(Coordinate coordA, Coordinate coordB) 
+        {
+        return !coordA.Equals(coordB);
+        }
     }
 }

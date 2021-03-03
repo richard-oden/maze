@@ -12,6 +12,7 @@ namespace Maze
         public Coordinate Start {get; private set;}
         public Coordinate End {get; private set;}
         private Dictionary<string, Quadrant> _quadrants;
+        public HashSet<Coordinate> Solution = new HashSet<Coordinate>();
 
         public Maze(int width, int height, Coordinate? start = null, Coordinate? end = null)
         {

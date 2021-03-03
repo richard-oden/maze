@@ -12,7 +12,13 @@ namespace Maze
             _maze = maze;
         }
 
-        public void PropogateWaves()
+        public void Start(int cellSize = 1, bool visualize = false)
+        {
+            AssignDistances();
+            BuildSolution(cellSize, visualize);
+        }
+
+        public void AssignDistances()
         {
             var oldCoords = new HashSet<Coordinate>();
             var newCoords = new HashSet<Coordinate>() {_maze.End};
@@ -38,6 +44,31 @@ namespace Maze
 
                 // Move all neighbors to new coords:
                 newCoords.UnionWith(newNeighbors);
+            }
+        }
+
+        public void BuildSolution(int cellSize, bool visualize)
+        {
+            var render = new Render(_maze);
+            var currentCoord = _maze.Start;
+            _maze.Solution.Add(currentCoord);
+            while (currentCoord != _maze.End)
+            {
+                // Add neighbor with least distance from end which has connection to cell at current coord:
+                var validNeighbors = currentCoord.GetNeighbors().Where(n =>
+                    _maze.IsCoordinateInBounds(n) &&
+                    _maze.DoesConnectionExistBetween(currentCoord, n));
+                var lowestDistance = validNeighbors.Min(n => _maze.Cells[n.X, n.Y].DistanceFromEnd);
+                var nextCoord = validNeighbors.First(n => _maze.Cells[n.X, n.Y].DistanceFromEnd == lowestDistance);
+                _maze.Solution.Add(nextCoord);
+                currentCoord = nextCoord;
+
+                if (visualize)
+                {
+                    render.Start(cellSize, true);
+                    System.Threading.Thread.Sleep(100);
+                    Console.Clear();
+                }
             }
         }
     }

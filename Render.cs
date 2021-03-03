@@ -12,12 +12,29 @@ namespace Maze
             _maze = maze;
         }
 
-        public void Start(int cellSize = 1, bool showWaveProp = false) {
-            var mazeArray = buildMazeArray(cellSize, showWaveProp);
-            var mazeString = BuildMazeString(mazeArray);
+        public void Start(int cellSize = 1, bool showSolution = false, bool showDistance = false) {
+            var mazeArray = buildMazeArray(cellSize, showSolution, showDistance);
+            var mazeString = buildMazeString(mazeArray);
             Console.WriteLine(mazeString);
         }
-        private string[,] buildMazeArray(int cellSize, bool showWaveProp)
+
+        private string getCellCenter(int x, int y, bool showSolution, bool showDistance)
+        {
+            string center; 
+            if (_maze.Start.X == x && _maze.Start.Y == y) 
+                center = "\u25B8 ";
+            else if (_maze.End.X == x && _maze.End.Y == y) 
+                center = "\u25AA ";
+            else if (showSolution && _maze.Solution.Contains(new Coordinate {X = x, Y = y}))
+                center = "\u2591\u2591";
+            else if (showDistance) 
+                center = $"{_maze.Cells[x,y].DistanceFromEnd}".PadRight(2);
+            else
+                center = "  ";
+            return center;
+        }
+
+        private string[,] buildMazeArray(int cellSize, bool showSolution, bool showDistance)
         {
             var mazeArray = new string[_maze.Cells.GetLength(0) * (cellSize + 1), _maze.Cells.GetLength(1) * (cellSize + 1)];
             for (int y = 0; y < _maze.Cells.GetLength(1); y++)
@@ -33,23 +50,19 @@ namespace Maze
                         {
                             if (_maze.Cells[x,y] != null)
                             {
+                                string cellOpening = showSolution && _maze.Solution.Contains(new Coordinate {X = x, Y = y}) ? "\u2591\u2591" : "  ";
                                 if (cellX == cellSize && cellY == cellSize)
                                     // Draw SE corner
                                     mazeArray[mazeX + cellX, mazeY + cellY] = "\u2588\u2588";
                                 else if (cellX == cellSize)
                                     // Draw east border
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.East) ? "  " : "\u2588\u2588";
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.East) ? cellOpening : "\u2588\u2588";
                                 else if (cellY == cellSize)
                                     // Draw south border
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? "  " : "\u2588\u2588";
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? cellOpening : "\u2588\u2588";
                                 else
-                                {
                                     // Draw center
-                                    var centerString = showWaveProp ? $"{_maze.Cells[x,y].DistanceFromEnd}".PadRight(2) : "  ";
-                                    if (_maze.Start.X == x && _maze.Start.Y == y) centerString = "\u25B8 ";
-                                    else if (_maze.End.X == x && _maze.End.Y == y) centerString = "\u25AA ";
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = centerString;
-                                }
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellCenter(x, y, showSolution, showDistance);
                             }
                             else
                             {
@@ -62,7 +75,7 @@ namespace Maze
             return mazeArray;
         }
 
-        public string BuildMazeString(string[,] mazeArray)
+        private string buildMazeString(string[,] mazeArray)
         {
             string mazeString = "";
             for (int y = 0; y < mazeArray.GetLength(1); y++)
