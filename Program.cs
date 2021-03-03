@@ -8,13 +8,16 @@ namespace Maze
     {
         static void Main(string[] args)
         {
-            // var maze = new Maze(24, 12);
-            // var pathBuilder = new PathBuilder(maze);
-            // var render = new Render(maze);
-            // pathBuilder.Start(true, 2);
-            // render.Start(2);
-        
-            var testMaze = new Maze(4, 4);
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            var maze = new Maze(6, 8);
+            var pathBuilder = new PathBuilder(maze);
+            var solutionFinder = new SolutionFinder(maze);
+            var render = new Render(maze);
+            pathBuilder.Start();
+            solutionFinder.PropogateWaves();
+            render.Start(2, true);
+            
         }
     }
 }

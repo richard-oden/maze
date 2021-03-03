@@ -12,12 +12,12 @@ namespace Maze
             _maze = maze;
         }
 
-        public void Start(int cellSize = 1) {
-            var mazeArray = buildMazeArray(cellSize);
+        public void Start(int cellSize = 1, bool showWaveProp = false) {
+            var mazeArray = buildMazeArray(cellSize, showWaveProp);
             var mazeString = BuildMazeString(mazeArray);
             Console.WriteLine(mazeString);
         }
-        private string[,] buildMazeArray(int cellSize)
+        private string[,] buildMazeArray(int cellSize, bool showWaveProp)
         {
             var mazeArray = new string[_maze.Cells.GetLength(0) * (cellSize + 1), _maze.Cells.GetLength(1) * (cellSize + 1)];
             for (int y = 0; y < _maze.Cells.GetLength(1); y++)
@@ -43,8 +43,13 @@ namespace Maze
                                     // Draw south border
                                     mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? "  " : "\u2588\u2588";
                                 else
+                                {
                                     // Draw center
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = "  ";
+                                    var centerString = showWaveProp ? $"{_maze.Cells[x,y].DistanceFromEnd}".PadRight(2) : "  ";
+                                    if (_maze.Start.X == x && _maze.Start.Y == y) centerString = "\u25B8 ";
+                                    else if (_maze.End.X == x && _maze.End.Y == y) centerString = "\u25AA ";
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = centerString;
+                                }
                             }
                             else
                             {

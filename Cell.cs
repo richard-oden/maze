@@ -6,6 +6,7 @@ namespace Maze
     public class Cell
     {
         public HashSet<Direction> Connections = new HashSet<Direction>();
+        public int DistanceFromEnd = 0;
     }
     public enum Direction
     {

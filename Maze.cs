@@ -32,7 +32,7 @@ namespace Maze
         {   
             var originQuad = _quadrants.Single(q => q.Value.IsCoordinateInBounds(originCoord));
             var oppositeQuad = _quadrants.Single(q => q.Key[0] != originQuad.Key[0] && q.Key[1] != originQuad.Key[1]);
-            var oppositeCoord = Coordinate.Random(oppositeQuad.Value.XMin, oppositeQuad.Value.YMin, oppositeQuad.Value.XMax, oppositeQuad.Value.XMax);
+            var oppositeCoord = Coordinate.Random(oppositeQuad.Value.XMin, oppositeQuad.Value.YMin, oppositeQuad.Value.XMax, oppositeQuad.Value.YMax);
             return oppositeCoord;
         }
 
@@ -45,11 +45,11 @@ namespace Maze
             }
             else if (start == null)
             {
-                End = getCoordinateInOppositeQuadrant(Start);
+                Start = getCoordinateInOppositeQuadrant(End);
             }
             else if (end == null)
             {
-                Start = getCoordinateInOppositeQuadrant(End);
+                End = getCoordinateInOppositeQuadrant(Start);
             }
             else {
                 Start = (Coordinate) start;
