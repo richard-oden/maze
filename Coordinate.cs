@@ -35,7 +35,12 @@ namespace Maze
 
         public static bool operator !=(Coordinate coordA, Coordinate coordB) 
         {
-        return !coordA.Equals(coordB);
+            return !coordA.Equals(coordB);
+        }
+
+        public override string ToString()
+        {
+            return $"({X}, {Y})";
         }
     }
 }

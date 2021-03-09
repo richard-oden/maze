@@ -66,7 +66,7 @@ namespace Maze
                 if (visualize)
                 {
                     render.Start(cellSize, true);
-                    System.Threading.Thread.Sleep(100);
+                    System.Threading.Thread.Sleep(50);
                     Console.Clear();
                 }
             }
