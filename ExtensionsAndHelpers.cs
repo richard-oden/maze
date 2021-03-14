@@ -31,13 +31,13 @@ namespace Maze
             return Console.ReadKey(true).Key;
         }
 
-        public static string PromptLoop(string prompt, Func<string, bool> validator)
+        public static string PromptLoop(string prompt, Func<string, int?, int?, bool> validator, int? param1 = null, int? param2 = null)
         {
             string output = null;
             while (output == null)
             {
                 var input = Prompt(prompt);
-                if (validator(input)) 
+                if (validator(input, param1, param2)) 
                     output = input;
                 else
                     PromptKey($"Input \"{input}\" is not valid.");
@@ -46,23 +46,27 @@ namespace Maze
             return output;
         }
 
-        public static bool IsYOrN(string input)
+        public static bool IsYOrN(string input, int? param1 = null, int? param2 = null)
         {
             return new string[] {"y", "n"}.Contains(input.ToLower());
         }
 
-        public static bool IsInt(string input)
+        public static bool IsValidInt(string input, int? lowerBound = null, int? upperBound = null)
         {
-            return int.TryParse(input, out _);
+            int parsedInput;
+            return int.TryParse(input, out parsedInput)
+                && (lowerBound == null || parsedInput >= (int)lowerBound)
+                && (upperBound == null || parsedInput <= (int)upperBound);
         }
 
-        public static bool IsCoord(string input)
+        public static bool IsValidCoord(string input, int? width = null, int? height = null)
         {
             var inputArr = Regex.Split(input, @"[,| ]");
             return input == ""
-                || inputArr.Length == 2 
-                && IsInt(inputArr[0]) 
-                && IsInt(inputArr[1]);
+                || inputArr.Length == 2 // input contains only 2 values separated by comma or space
+                && IsValidInt(inputArr[0]) && IsValidInt(inputArr[1]) // values are integers
+                && (width == null || height == null) // don't check bounding if width or height are null
+                || ((Coordinate)ParseCoord(input)).IsInBounds((int)width, (int)height); // otherwise check bounding
         }
 
         public static bool ParseYOrN(string input)

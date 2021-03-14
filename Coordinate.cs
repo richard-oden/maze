@@ -42,5 +42,11 @@ namespace Maze
         {
             return $"({X}, {Y})";
         }
+
+        public bool IsInBounds(int width, int height)
+        {
+            return X > -1 && X < width &&
+                   Y > -1 && Y < height;
+        }
     }
 }

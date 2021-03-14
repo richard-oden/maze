@@ -22,10 +22,10 @@ namespace Maze
             bool mazeCreated = false;
             while (!mazeCreated)
             {
-                mazeWidth = int.Parse(PromptLoop("Enter a width for your maze (Note: If maze width is too large, rendering will break due to line wrapping)", IsInt));
-                mazeHeight = int.Parse(PromptLoop("Enter a height for your maze", IsInt));
-                startCoord = ParseCoord(PromptLoop("Enter a starting coordinate (leave blank for a random coordinate)", IsCoord));
-                endCoord = ParseCoord(PromptLoop("Enter an ending coordinate (leave blank for a random coordinate)", IsCoord));
+                mazeWidth = int.Parse(PromptLoop("Enter a width for your maze (Note: If maze width is too large, rendering will break due to line wrapping)", IsValidInt));
+                mazeHeight = int.Parse(PromptLoop("Enter a height for your maze", IsValidInt));
+                startCoord = ParseCoord(PromptLoop("Enter a starting coordinate (leave blank for a random coordinate)", IsValidCoord, mazeWidth, mazeHeight));
+                endCoord = ParseCoord(PromptLoop("Enter an ending coordinate (leave blank for a random coordinate)", IsValidCoord, mazeWidth, mazeHeight));
 
                 mazeCreated = ParseYOrN(PromptLoop($"You have a created a {mazeWidth}x{mazeHeight} maze with the start located at {randomOrDefinedCoord(startCoord)} and the end located at {randomOrDefinedCoord(endCoord)}. Is this correct? (Y/N)", IsYOrN));
             }
@@ -33,21 +33,32 @@ namespace Maze
             return new Maze(mazeWidth, mazeHeight, startCoord, endCoord);
         }
 
-        public static object DefinePathBuilderOptionsLoop(Maze maze)
+        public static dynamic DefineMazeOptions(Maze maze)
         {
-            bool visualize = false;
             int cellSize = 1;
+            bool visualizePath = false;
+            bool visualizeSolution = false;
+            bool solveManually = false;
 
             bool pathBuilderOptionsCreated = false;
             while (!pathBuilderOptionsCreated)
             {
-                cellSize = int.Parse(PromptLoop("Enter cell size (Note: If cell size is too large, rendering will break due to line wrapping)", IsInt));
-                visualize = ParseYOrN(PromptLoop("Visualize maze during path generation? (Y/N)", IsYOrN));
+                cellSize = int.Parse(PromptLoop("Enter cell size (Note: If cell size is too large, rendering will break due to line wrapping)", IsValidInt));
+                visualizePath = ParseYOrN(PromptLoop("Visualize maze during path generation? (Y/N)", IsYOrN));
+                visualizeSolution = ParseYOrN(PromptLoop("Visualize maze during solution generation? (Y/N)", IsYOrN));
+                solveManually = ParseYOrN(PromptLoop("Solve maze manually (Y) or generate solution automatically? (N)", IsYOrN));
 
-                pathBuilderOptionsCreated = ParseYOrN(PromptLoop($"You have chosen a cell size of {cellSize} and have set path visualization to {visualize.ToString().ToLower()}. Is this correct? (Y/N)", IsYOrN));
+                var solutionMethodString = solveManually ? "manually" : "automatically";
+                pathBuilderOptionsCreated = ParseYOrN(PromptLoop($"You have chosen a cell size of {cellSize}, set path visualization to {visualizePath.ToString().ToLower()}, and set solution visualization to {visualizeSolution.ToString().ToLower()}. You would also like to solve the maze {solutionMethodString}. Is this correct? (Y/N)", IsYOrN));
             }
 
-            return new {Visualize = visualize, CellSize = cellSize};
+            return new 
+            {
+                CellSize = cellSize, 
+                VisualizePath = visualizePath, 
+                VisualizeSolution = visualizeSolution,
+                SolveManually = solveManually
+            };
         }
     }
 }
