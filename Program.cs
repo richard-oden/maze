@@ -25,7 +25,8 @@ namespace Maze
             // MAIN LOOP ===========================================================
             while (running)
             {
-                var maze = InputManager.MazeOptionsLoop();
+                var maze = InputManager.DefineMazeLoop();
+                var pathBuilderOptions = InputManager.DefinePathBuilderOptionsLoop(maze);
             }
         }
     }
