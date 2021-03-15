@@ -28,6 +28,17 @@ namespace Maze
             };
         }
 
+        // This is to make visual studio shut up
+        public override bool Equals(object obj)
+        {
+           return base.Equals(obj);
+        }
+        
+        public override int GetHashCode()
+        {
+           return base.GetHashCode();
+        }
+
         public static bool operator ==(Coordinate coordA, Coordinate coordB) 
         {
             return coordA.Equals(coordB);

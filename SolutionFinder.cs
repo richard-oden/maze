@@ -52,11 +52,10 @@ namespace Maze
             var render = new Render(_maze);
             var currentCoord = _maze.Start;
             _maze.Solution.Add(currentCoord);
-            while (currentCoord != _maze.End)
+            while (_maze.Cells[currentCoord.X, currentCoord.Y].DistanceFromEnd > 1)
             {
                 // Add neighbor with least distance from end which has connection to cell at current coord:
                 var validNeighbors = currentCoord.GetNeighbors().Where(n =>
-                    _maze.IsCoordinateInBounds(n) &&
                     _maze.DoesConnectionExistBetween(currentCoord, n));
                 var lowestDistance = validNeighbors.Min(n => _maze.Cells[n.X, n.Y].DistanceFromEnd);
                 var nextCoord = validNeighbors.First(n => _maze.Cells[n.X, n.Y].DistanceFromEnd == lowestDistance);

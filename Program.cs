@@ -11,13 +11,13 @@ namespace Maze
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             bool running = true;
-            
+
             Console.WriteLine("Welcome!");
             // MAIN LOOP ===========================================================
             while (running)
             {
                 var maze = InputManager.DefineMazeLoop();
-                var mazeOptions = InputManager.DefineMazeOptions(maze);
+                var mazeOptions = InputManager.DefineMazeOptionsLoop(maze);
 
                 var pathBuilder = new PathBuilder(maze);
                 var solutionFinder = new SolutionFinder(maze);
@@ -26,7 +26,7 @@ namespace Maze
                 pathBuilder.Start(mazeOptions.VisualizePath, mazeOptions.CellSize);
                 if (mazeOptions.SolveManually)
                 {
-                    // Solve manual loop
+                    InputManager.HandleNavigationLoop(maze, render, mazeOptions.CellSize);
                 }
                 else
                 {

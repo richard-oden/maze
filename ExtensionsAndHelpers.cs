@@ -27,8 +27,21 @@ namespace Maze
 
         public static ConsoleKey PromptKey(string prompt)
         {
-            Console.WriteLine(prompt);
+            Console.Write(prompt + ": ");
             return Console.ReadKey(true).Key;
+        }
+
+        public static ConsoleKey? PromptKeyAndValidate(string prompt, IEnumerable<ConsoleKey> validKeys)
+        {
+            ConsoleKey? output = null;
+
+            var input = PromptKey(prompt);
+            if (validKeys.Contains((ConsoleKey)input))
+                output = input;
+            else
+                PromptKey($"Input \"{input.ToString()}\" is not valid.");
+
+            return output;
         }
 
         public static string PromptLoop(string prompt, Func<string, int?, int?, bool> validator, int? param1 = null, int? param2 = null)
@@ -61,12 +74,12 @@ namespace Maze
 
         public static bool IsValidCoord(string input, int? width = null, int? height = null)
         {
-            var inputArr = Regex.Split(input, @"[,| ]");
+            var inputArr = Regex.Split(input, @"[,|\s]+");
             return input == ""
                 || inputArr.Length == 2 // input contains only 2 values separated by comma or space
                 && IsValidInt(inputArr[0]) && IsValidInt(inputArr[1]) // values are integers
-                && (width == null || height == null) // don't check bounding if width or height are null
-                || ((Coordinate)ParseCoord(input)).IsInBounds((int)width, (int)height); // otherwise check bounding
+                && ((width == null || height == null) // don't check bounding if width or height are null
+                || ((Coordinate)ParseCoord(input)).IsInBounds((int)width, (int)height)); // otherwise check bounding
         }
 
         public static bool ParseYOrN(string input)
@@ -76,7 +89,7 @@ namespace Maze
 
         public static Coordinate? ParseCoord(string input)
         {
-            var inputArr = Regex.Split(input, @"[,| ]");
+            var inputArr = Regex.Split(input, @"[,|\s]+");
             return input == "" ? null : new Coordinate {X = int.Parse(inputArr[0]), Y = int.Parse(inputArr[1])};
         }
     }

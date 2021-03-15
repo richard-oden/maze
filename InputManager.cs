@@ -33,7 +33,7 @@ namespace Maze
             return new Maze(mazeWidth, mazeHeight, startCoord, endCoord);
         }
 
-        public static dynamic DefineMazeOptions(Maze maze)
+        public static dynamic DefineMazeOptionsLoop(Maze maze)
         {
             int cellSize = 1;
             bool visualizePath = false;
@@ -59,6 +59,35 @@ namespace Maze
                 VisualizeSolution = visualizeSolution,
                 SolveManually = solveManually
             };
+        }
+
+        private static ConsoleKey? promptNavigationInput()
+        {
+            return PromptKeyAndValidate("Use the arrow keys to move, S to toggle solution, and Q to quit", new [] 
+            {
+                ConsoleKey.UpArrow,
+                ConsoleKey.RightArrow,
+                ConsoleKey.DownArrow,
+                ConsoleKey.LeftArrow,
+                ConsoleKey.S,
+                ConsoleKey.Q
+            });
+        }
+
+        private static dynamic parseNavigationInput(Maze maze, ConsoleKey input)
+        {
+            return new {Running = true, ShowSolution = false};
+        }
+
+        public static void HandleNavigationLoop(Maze maze, Render render, int cellSize)
+        {
+            var navigationOptions = new {Running = true, ShowSolution = false};
+            while (navigationOptions.Running)
+            {
+                render.Start(cellSize, navigationOptions.ShowSolution);
+                var input = promptNavigationInput();
+                if (input != null) navigationOptions = parseNavigationInput(maze, (ConsoleKey)input);
+            }
         }
     }
 }
