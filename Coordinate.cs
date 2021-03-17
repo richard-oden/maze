@@ -59,5 +59,22 @@ namespace Maze
             return X > -1 && X < width &&
                    Y > -1 && Y < height;
         }
+
+        public Coordinate GetAdjacent(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.North:
+                    return new Coordinate {X = this.X, Y = this.Y - 1};
+                case Direction.South:
+                    return new Coordinate {X = this.X, Y = this.Y + 1};
+                case Direction.East:
+                    return new Coordinate {X = this.X + 1, Y = this.Y};
+                case Direction.West:
+                    return new Coordinate {X = this.X - 1, Y = this.Y};
+                default:
+                    throw new System.Exception("Invalid direction! Could not get adjacent coordinate.");
+            }
+        }
     }
 }

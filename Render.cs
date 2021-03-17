@@ -12,13 +12,13 @@ namespace Maze
             _maze = maze;
         }
 
-        public void Start(int cellSize = 1, bool showSolution = false, bool showDistance = false) {
-            var mazeArray = buildMazeArray(cellSize, showSolution, showDistance);
+        public void Start(int cellSize = 1, bool showSolution = false, bool showPlayerSolution = false, bool showDistance = false) {
+            var mazeArray = buildMazeArray(cellSize, showSolution, showPlayerSolution, showDistance);
             var mazeString = buildMazeString(mazeArray);
             Console.WriteLine(mazeString);
         }
 
-        private string getCellCenter(int x, int y, bool showSolution, bool showDistance)
+        private string getCellCenter(int x, int y, bool showSolution, bool showPlayerSolution, bool showDistance)
         {
             string center; 
             if (_maze.Start.X == x && _maze.Start.Y == y) 
@@ -27,6 +27,8 @@ namespace Maze
                 center = "\u25AA ";
             else if (showSolution && _maze.Solution.Contains(new Coordinate {X = x, Y = y}))
                 center = "\u2591\u2591";
+            else if (showPlayerSolution && _maze.PlayerSolution.Contains(new Coordinate {X = x, Y = y}))
+                center = "\u2593\u2593";
             else if (showDistance) 
                 center = $"{_maze.Cells[x,y].DistanceFromEnd}".PadRight(2);
             else
@@ -34,7 +36,7 @@ namespace Maze
             return center;
         }
 
-        private string[,] buildMazeArray(int cellSize, bool showSolution, bool showDistance)
+        private string[,] buildMazeArray(int cellSize, bool showSolution, bool showPlayerSolution, bool showDistance)
         {
             var mazeArray = new string[_maze.Cells.GetLength(0) * (cellSize + 1), _maze.Cells.GetLength(1) * (cellSize + 1)];
             for (int y = 0; y < _maze.Cells.GetLength(1); y++)
@@ -50,7 +52,7 @@ namespace Maze
                         {
                             if (_maze.Cells[x,y] != null)
                             {
-                                string cellOpening = showSolution && _maze.Solution.Contains(new Coordinate {X = x, Y = y}) ? "\u2591\u2591" : "  ";
+                                string cellOpening = getCellCenter(x, y, showSolution, showPlayerSolution, showDistance);
                                 if (cellX == cellSize && cellY == cellSize)
                                     // Draw SE corner
                                     mazeArray[mazeX + cellX, mazeY + cellY] = "\u2588\u2588";
@@ -62,7 +64,7 @@ namespace Maze
                                     mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? cellOpening : "\u2588\u2588";
                                 else
                                     // Draw center
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellCenter(x, y, showSolution, showDistance);
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellCenter(x, y, showSolution, showPlayerSolution, showDistance);
                             }
                             else
                             {

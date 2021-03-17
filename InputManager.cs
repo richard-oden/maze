@@ -74,19 +74,46 @@ namespace Maze
             });
         }
 
-        private static dynamic parseNavigationInput(Maze maze, ConsoleKey input)
+        private static dynamic parseNavigationInput(SolutionBuilder solutionBuilder, ConsoleKey input)
         {
-            return new {Running = true, ShowSolution = false};
+            var running = true;
+            var showSolution = false;
+            
+            switch (input)
+            {
+                case ConsoleKey.UpArrow:
+                    solutionBuilder.BuildPlayerSolution(Direction.North);
+                    break;
+                case ConsoleKey.RightArrow:
+                    solutionBuilder.BuildPlayerSolution(Direction.East);
+                    break;
+                case ConsoleKey.DownArrow:
+                    solutionBuilder.BuildPlayerSolution(Direction.South);
+                    break;
+                case ConsoleKey.LeftArrow:
+                    solutionBuilder.BuildPlayerSolution(Direction.West);
+                    break;
+                case ConsoleKey.S:
+                    showSolution = true;
+                    break;
+                case ConsoleKey.Q:
+                    running = false;
+                    break;
+            }
+
+            return new {Running = running, ShowSolution = showSolution};
         }
 
         public static void HandleNavigationLoop(Maze maze, Render render, int cellSize)
         {
+            maze.PlayerSolution.AddFirst(maze.Start);
+            var solutionBuilder = new SolutionBuilder(maze);
             var navigationOptions = new {Running = true, ShowSolution = false};
             while (navigationOptions.Running)
             {
                 render.Start(cellSize, navigationOptions.ShowSolution);
                 var input = promptNavigationInput();
-                if (input != null) navigationOptions = parseNavigationInput(maze, (ConsoleKey)input);
+                if (input != null) navigationOptions = parseNavigationInput(solutionBuilder, (ConsoleKey)input);
             }
         }
     }

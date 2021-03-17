@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace Maze
 {
-    public class SolutionFinder
+    public class SolutionBuilder
     {
         Maze _maze;
-        public SolutionFinder(Maze maze)
+        public SolutionBuilder(Maze maze)
         {
             _maze = maze;
         }
@@ -68,6 +68,19 @@ namespace Maze
                     System.Threading.Thread.Sleep(50);
                     Console.Clear();
                 }
+            }
+        }
+
+        public void BuildPlayerSolution(Direction inputDirection)
+        {
+            var currentNode = _maze.PlayerSolution.First;
+            var desiredDestination = currentNode.Value.GetAdjacent(inputDirection);
+            if (_maze.IsCoordinateInBounds(desiredDestination))
+            {
+                if (currentNode.Next.Value == desiredDestination)
+                    _maze.PlayerSolution.RemoveFirst();
+                else if (_maze.DoesConnectionExistBetween(currentNode.Value, desiredDestination))
+                    _maze.PlayerSolution.AddFirst(desiredDestination);
             }
         }
     }

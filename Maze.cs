@@ -13,7 +13,7 @@ namespace Maze
         public Coordinate End {get; private set;}
         private Dictionary<string, Quadrant> _quadrants;
         public HashSet<Coordinate> Solution = new HashSet<Coordinate>();
-        public HashSet<Coordinate> PlayerSolution = new HashSet<Coordinate>();
+        public LinkedList<Coordinate> PlayerSolution = new LinkedList<Coordinate>();
 
         public Maze(int width, int height, Coordinate? start = null, Coordinate? end = null)
         {

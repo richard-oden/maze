@@ -20,7 +20,7 @@ namespace Maze
                 var mazeOptions = InputManager.DefineMazeOptionsLoop(maze);
 
                 var pathBuilder = new PathBuilder(maze);
-                var solutionFinder = new SolutionFinder(maze);
+                var solutionBuilder = new SolutionBuilder(maze);
                 var render = new Render(maze);
 
                 pathBuilder.Start(mazeOptions.VisualizePath, mazeOptions.CellSize);
@@ -30,7 +30,7 @@ namespace Maze
                 }
                 else
                 {
-                    solutionFinder.Start(mazeOptions.CellSize, mazeOptions.VisualizePath);
+                    solutionBuilder.Start(mazeOptions.CellSize, mazeOptions.VisualizePath);
                 }
                 render.Start(mazeOptions.CellSize, showSolution: true);
             }
