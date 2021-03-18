@@ -77,7 +77,8 @@ namespace Maze
             var desiredDestination = currentNode.Value.GetAdjacent(inputDirection);
             if (_maze.IsCoordinateInBounds(desiredDestination))
             {
-                if (currentNode.Next.Value == desiredDestination)
+                if (_maze.PlayerSolution.Count > 1 && 
+                    currentNode.Next.Value == desiredDestination)
                     _maze.PlayerSolution.RemoveFirst();
                 else if (_maze.DoesConnectionExistBetween(currentNode.Value, desiredDestination))
                     _maze.PlayerSolution.AddFirst(desiredDestination);

@@ -27,7 +27,7 @@ namespace Maze
 
         public static ConsoleKey PromptKey(string prompt)
         {
-            Console.Write(prompt + ": ");
+            Console.Write(prompt);
             return Console.ReadKey(true).Key;
         }
 

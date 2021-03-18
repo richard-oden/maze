@@ -61,9 +61,15 @@ namespace Maze
             };
         }
 
+        public class NavigationOptions 
+        {
+            public bool Running;
+            public bool ShowSolution;
+        }
+
         private static ConsoleKey? promptNavigationInput()
         {
-            return PromptKeyAndValidate("Use the arrow keys to move, S to toggle solution, and Q to quit", new [] 
+            return PromptKeyAndValidate("Use the arrow keys to move, S to toggle solution, and Q to quit.", new [] 
             {
                 ConsoleKey.UpArrow,
                 ConsoleKey.RightArrow,
@@ -74,10 +80,10 @@ namespace Maze
             });
         }
 
-        private static dynamic parseNavigationInput(SolutionBuilder solutionBuilder, ConsoleKey input)
+        private static NavigationOptions parseNavigationInput(SolutionBuilder solutionBuilder, ConsoleKey input, NavigationOptions navOptions)
         {
-            var running = true;
-            var showSolution = false;
+            var running = navOptions.Running;
+            var showSolution = navOptions.ShowSolution;
             
             switch (input)
             {
@@ -94,26 +100,30 @@ namespace Maze
                     solutionBuilder.BuildPlayerSolution(Direction.West);
                     break;
                 case ConsoleKey.S:
-                    showSolution = true;
+                    showSolution = !showSolution;
                     break;
                 case ConsoleKey.Q:
-                    running = false;
+                    running = !running;
                     break;
             }
 
-            return new {Running = running, ShowSolution = showSolution};
+            return new NavigationOptions {Running = running, ShowSolution = showSolution};
         }
 
         public static void HandleNavigationLoop(Maze maze, Render render, int cellSize)
         {
-            maze.PlayerSolution.AddFirst(maze.Start);
             var solutionBuilder = new SolutionBuilder(maze);
-            var navigationOptions = new {Running = true, ShowSolution = false};
-            while (navigationOptions.Running)
+            solutionBuilder.Start();
+
+            maze.PlayerSolution.AddFirst(maze.Start);
+            var navOptions = new NavigationOptions {Running = true, ShowSolution = false};
+            while (navOptions.Running)
             {
-                render.Start(cellSize, navigationOptions.ShowSolution);
+                render.Start(cellSize, navOptions.ShowSolution, showPlayerSolution: true);
                 var input = promptNavigationInput();
-                if (input != null) navigationOptions = parseNavigationInput(solutionBuilder, (ConsoleKey)input);
+                if (input != null) 
+                    navOptions = parseNavigationInput(solutionBuilder, (ConsoleKey)input, navOptions);
+                Console.Clear();
             }
         }
     }

@@ -13,7 +13,6 @@ namespace Maze
             bool running = true;
 
             Console.WriteLine("Welcome!");
-            // MAIN LOOP ===========================================================
             while (running)
             {
                 var maze = InputManager.DefineMazeLoop();
@@ -25,14 +24,11 @@ namespace Maze
 
                 pathBuilder.Start(mazeOptions.VisualizePath, mazeOptions.CellSize);
                 if (mazeOptions.SolveManually)
-                {
                     InputManager.HandleNavigationLoop(maze, render, mazeOptions.CellSize);
-                }
                 else
-                {
                     solutionBuilder.Start(mazeOptions.CellSize, mazeOptions.VisualizePath);
-                }
                 render.Start(mazeOptions.CellSize, showSolution: true);
+                Console.ReadKey(true);
             }
         }
     }

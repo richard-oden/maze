@@ -18,22 +18,38 @@ namespace Maze
             Console.WriteLine(mazeString);
         }
 
-        private string getCellCenter(int x, int y, bool showSolution, bool showPlayerSolution, bool showDistance)
+        private string getCellCenterShading(int x, int y, bool showSolution, bool showPlayerSolution, bool showDistance)
         {
-            string center; 
             if (_maze.Start.X == x && _maze.Start.Y == y) 
-                center = "\u25B8 ";
+                return "\u25B8 ";
             else if (_maze.End.X == x && _maze.End.Y == y) 
-                center = "\u25AA ";
-            else if (showSolution && _maze.Solution.Contains(new Coordinate {X = x, Y = y}))
-                center = "\u2591\u2591";
+                return "\u25AA ";
             else if (showPlayerSolution && _maze.PlayerSolution.Contains(new Coordinate {X = x, Y = y}))
-                center = "\u2593\u2593";
+                return "\u2592\u2592";
+            else if (showSolution && _maze.Solution.Contains(new Coordinate {X = x, Y = y}))
+                return "\u2591\u2591";
             else if (showDistance) 
-                center = $"{_maze.Cells[x,y].DistanceFromEnd}".PadRight(2);
+                return $"{_maze.Cells[x,y].DistanceFromEnd}".PadRight(2);
             else
-                center = "  ";
-            return center;
+                return "  ";
+        }
+
+        private string getCellBorderShading(int x, int y, Direction direction, bool showSolution, bool showPlayerSolution)
+        {
+            var cellCoord = new Coordinate {X = x, Y = y};
+            
+            if (!_maze.Cells[x,y].Connections.Contains(direction))
+                return "\u2588\u2588";
+            else if (showPlayerSolution && 
+                _maze.PlayerSolution.Contains(cellCoord) &&
+                _maze.PlayerSolution.Contains(cellCoord.GetAdjacent(direction)))
+                return "\u2592\u2592";
+            else if (showSolution && 
+                _maze.Solution.Contains(cellCoord) &&
+                _maze.Solution.Contains(cellCoord.GetAdjacent(direction)))
+                return "\u2591\u2591";
+            else
+                return "  ";
         }
 
         private string[,] buildMazeArray(int cellSize, bool showSolution, bool showPlayerSolution, bool showDistance)
@@ -52,19 +68,18 @@ namespace Maze
                         {
                             if (_maze.Cells[x,y] != null)
                             {
-                                string cellOpening = getCellCenter(x, y, showSolution, showPlayerSolution, showDistance);
                                 if (cellX == cellSize && cellY == cellSize)
                                     // Draw SE corner
                                     mazeArray[mazeX + cellX, mazeY + cellY] = "\u2588\u2588";
                                 else if (cellX == cellSize)
                                     // Draw east border
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.East) ? cellOpening : "\u2588\u2588";
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellBorderShading(x, y, Direction.East, showSolution, showPlayerSolution);
                                 else if (cellY == cellSize)
                                     // Draw south border
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = _maze.Cells[x,y].Connections.Contains(Direction.South) ? cellOpening : "\u2588\u2588";
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellBorderShading(x, y, Direction.South, showSolution, showPlayerSolution);
                                 else
                                     // Draw center
-                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellCenter(x, y, showSolution, showPlayerSolution, showDistance);
+                                    mazeArray[mazeX + cellX, mazeY + cellY] = getCellCenterShading(x, y, showSolution, showPlayerSolution, showDistance);
                             }
                             else
                             {
