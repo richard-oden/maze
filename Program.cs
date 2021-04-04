@@ -23,12 +23,14 @@ namespace Maze
                 var render = new Render(maze);
 
                 pathBuilder.Start(mazeOptions.VisualizePath, mazeOptions.CellSize);
+
                 if (mazeOptions.SolveManually)
                     InputManager.HandleNavigationLoop(maze, render, mazeOptions.CellSize);
                 else
                     solutionBuilder.Start(mazeOptions.CellSize, mazeOptions.VisualizePath);
+                
                 render.Start(mazeOptions.CellSize, showSolution: true);
-                Console.ReadKey(true);
+                running = InputManager.HandleTryAgainInput();
             }
         }
     }

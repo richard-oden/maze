@@ -61,12 +61,6 @@ namespace Maze
             };
         }
 
-        public class NavigationOptions 
-        {
-            public bool Running;
-            public bool ShowSolution;
-        }
-
         private static ConsoleKey? promptNavigationInput()
         {
             return PromptKeyAndValidate("Use the arrow keys to move, S to toggle solution, and Q to quit.", new [] 
@@ -78,6 +72,11 @@ namespace Maze
                 ConsoleKey.S,
                 ConsoleKey.Q
             });
+        }
+        public class NavigationOptions 
+        {
+            public bool Running;
+            public bool ShowSolution;
         }
 
         private static NavigationOptions parseNavigationInput(SolutionBuilder solutionBuilder, ConsoleKey input, NavigationOptions navOptions)
@@ -113,18 +112,36 @@ namespace Maze
         public static void HandleNavigationLoop(Maze maze, Render render, int cellSize)
         {
             var solutionBuilder = new SolutionBuilder(maze);
+            var stopwatch = new Stopwatch();
             solutionBuilder.Start();
 
             maze.PlayerSolution.AddFirst(maze.Start);
             var navOptions = new NavigationOptions {Running = true, ShowSolution = false};
+            stopwatch.Start();
             while (navOptions.Running)
             {
                 render.Start(cellSize, navOptions.ShowSolution, showPlayerSolution: true);
-                var input = promptNavigationInput();
-                if (input != null) 
-                    navOptions = parseNavigationInput(solutionBuilder, (ConsoleKey)input, navOptions);
+                
+                if (maze.PlayerSolution.First.Value == maze.End)
+                {
+                    PromptKey($"You solved it! Your time was {stopwatch.GetElpasedTime()}.");
+                    navOptions.Running = false;
+                }
+                else
+                {
+                    var input = promptNavigationInput();
+                    if (input != null)
+                    {
+                        navOptions = parseNavigationInput(solutionBuilder, (ConsoleKey)input, navOptions);
+                    }
+                }
                 Console.Clear();
             }
+        }
+
+        public static bool HandleTryAgainInput()
+        {
+            return ParseYOrN(PromptLoop("Try again? (Y/N)", IsYOrN));
         }
     }
 }
